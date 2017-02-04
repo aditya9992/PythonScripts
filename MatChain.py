@@ -1,4 +1,4 @@
-import sys
+import sys, time
 
 def MatrixChainDynamic(p, n):
     # 0th row and column are used for the sake of evaluating
@@ -21,7 +21,7 @@ def MatrixChainDynamic(p, n):
                 if c < m[j][k]:
                     m[j][k] = c
 
-    return m[1][n - 1]
+    return m
 
 p = [1,2,3,4]
 
@@ -41,7 +41,7 @@ def matrix_chain_recursive(a,i,j):
 
 def matrix_chain_dynamic(p,n):
     s = [[0 for x in range(n)] for x in range(n)]
-
+    s1 = [[0 for x in range(1,n-1)] for x in range(2,len(n))]
 
     for i in range(1, n):
         s[i][i] = 0
@@ -54,7 +54,8 @@ def matrix_chain_dynamic(p,n):
 
                 if cost < s[i][j]:
                     s[i][j] = cost
-    return s[1][n-1]
+                    s1[i][j] = k
+    return s, s1
 
 def matrix_chain_memoizing(p,i,j):
     if s[i][j] != 0:
@@ -69,3 +70,41 @@ def matrix_chain_memoizing(p,i,j):
                 if cost < s[i][j]:
                     s[i][j] = cost
     return s[1][len(p)-1]
+
+lm1 = lambda i,j:str(i)+','+str(j)
+
+def mcm(p):
+    n = len(p) - 1
+    m = {}
+    for i in range(1, n + 1):
+        for j in range(i, n + 1):
+            m[gk(i, j)] = sys.maxsize
+
+    return lookupchain(m,p,1,n)
+
+def lookupchain(m,p,i,j):
+    if m[gk(i,j)] < sys.maxsize:
+        return m[gk(i,j)]
+    if i == j:
+        m[gk(i,j)] = 0
+    else:
+        for k in range(i,j):
+            q = lookupchain(m,p,i,k) + lookupchain(m,p,k+1,j) + p[i-1]*p[k]*p[j]
+            if q < m[gk(i,j)]:
+                m[gk(i,j)] = q
+    return m[gk(i,j)]
+
+def main():
+    p = [30,35,15,5,10,20,25,5,16,34,28,19,66,34,78,55,23]
+    print(mcm(p))
+
+if __name__ == '__main__':
+    b = time.time()
+    main()
+    print('total run time is:', time.time()-b)
+
+def printp(s,i,j):
+    if i==j:
+        print('A' + str(i))
+    else:
+        print('(' + str(printp(s,i,s[i][j])) + str(printp(s,s[i][j]+1,j))+ ')')

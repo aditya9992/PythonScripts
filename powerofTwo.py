@@ -14,7 +14,3 @@ def eval_power(val):
         z += 1
 
     return (val1/2),z
-
-
-
-
